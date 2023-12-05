@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 	"regexp"
+	"strconv"
 )
 
 func parseValue(value string) string {
@@ -38,19 +38,19 @@ func parseValue(value string) string {
 }
 
 func main() {
-    args := os.Args[1:]
+	args := os.Args[1:]
 
-    if len(args) < 1 {
-        panic("Provide an input file")
-    }
-    filepath := args[0]
+	if len(args) < 1 {
+		panic("Provide an input file")
+	}
+	filepath := args[0]
 
-    var r *regexp.Regexp
-    if len(args) > 1 && args[1] == "2" {
+	var r *regexp.Regexp
+	if len(args) > 1 && args[1] == "2" {
 		r = regexp.MustCompile(`([1-9]|one|two|three|four|five|six|seven|eight|nine)`)
-    }else {
+	} else {
 		r = regexp.MustCompile(`([1-9])`)
-    }
+	}
 
 	f, err := os.Open(filepath)
 	if err != nil {
@@ -61,28 +61,28 @@ func main() {
 
 	scanner := bufio.NewScanner(f)
 
-    fmt.Println("Calibration values:")
+	fmt.Println("Calibration values:")
 	result := 0
 	for scanner.Scan() {
 		line := scanner.Text()
 
-        matches := []string{}
-        for i := 0; i < len(line); i++ {
-            for _, match := range r.FindAllString(line[i:], -1) {
-                matches = append(matches, match)
-            }
-        }
+		matches := []string{}
+		for i := 0; i < len(line); i++ {
+			for _, match := range r.FindAllString(line[i:], -1) {
+				matches = append(matches, match)
+			}
+		}
 		left := matches[0]
 		right := matches[len(matches)-1]
 
-        numberStr := parseValue(left) + parseValue(right)
+		numberStr := parseValue(left) + parseValue(right)
 		number, err := strconv.Atoi(numberStr)
 		if err != nil {
 			panic(err)
 		}
-        result += number
+		result += number
 
-        fmt.Println(line, number)
+		fmt.Println(line, number)
 	}
 
 	if err := scanner.Err(); err != nil {
