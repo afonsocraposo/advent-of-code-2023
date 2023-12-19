@@ -54,7 +54,6 @@ func Part2(filepath string) int {
 
 	result := 0
 	for _, hand := range hands {
-		fmt.Println(hand)
 		result += hand.rank * hand.bid
 	}
 
