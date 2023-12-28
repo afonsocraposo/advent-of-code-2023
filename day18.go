@@ -6,8 +6,7 @@ import (
 )
 
 func floodFill(puzzle Matrix, start Point) int {
-	result := 0
-	visited := map[Point]bool{}
+	visited := map[Point]bool{start: true}
 	queue := []Point{start}
 	for len(queue) > 0 {
 		start := queue[0]
@@ -17,14 +16,13 @@ func floodFill(puzzle Matrix, start Point) int {
 			if puzzle.inside(point) {
 				_, found := visited[point]
 				if puzzle.get(point) == 0 && !found {
-					result++
 					visited[point] = true
 					queue = append(queue, point)
 				}
 			}
 		}
 	}
-	return result
+	return len(visited)
 }
 
 func day18(filepath string) {
@@ -34,8 +32,8 @@ func day18(filepath string) {
 	border := []Point{pos}
 	m := 0
 	n := 0
-    oi := 0
-    oj := 0
+	oi := 0
+	oj := 0
 	for _, line := range text {
 		parts := strings.Split(line, " ")
 		d := rune(parts[0][0])
@@ -45,14 +43,14 @@ func day18(filepath string) {
 			pos = pos.move(direction)
 			m = max(m, pos.i+1)
 			n = max(n, pos.j+1)
-            oi = min(oi, pos.i)
-            oj = min(oj, pos.j)
+			oi = min(oi, pos.i)
+			oj = min(oj, pos.j)
 			border = append(border, pos)
 		}
 	}
 
-    m = m-oi
-    n = n-oj
+	m = m - oi
+	n = n - oj
 	puzzle := newMatrix(m, n)
 	for _, point := range border {
 		puzzle[point.i-oi][point.j-oj] = 1
