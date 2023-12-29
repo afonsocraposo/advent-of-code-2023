@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 )
@@ -44,6 +45,10 @@ var (
 
 var DIRECTIONS = []Direction{UP, RIGHT, DOWN, LEFT}
 
+func (direction *Direction) scale(n int) Direction {
+	return Direction{direction.i * n, direction.j * n}
+}
+
 var CHAR_TO_DIRECTION = map[rune]Direction{
 	'U': UP,
 	'R': RIGHT,
@@ -53,6 +58,18 @@ var CHAR_TO_DIRECTION = map[rune]Direction{
 
 func (point *Point) move(direction Direction) Point {
 	return Point{point.i + direction.i, point.j + direction.j}
+}
+
+func (p1 *Point) distance(p2 Point) float64 {
+	return math.Sqrt(math.Pow(float64(p2.i-p1.i), 2)+math.Pow(float64(p2.j-p1.j), 2))
+}
+
+func (point *Point) inside(m int, n int) bool {
+	return point.i >= 0 && point.j >= 0 && point.i < m && point.j < n
+}
+
+func (point *Point) toString() string {
+	return fmt.Sprintf("%d:%d", point.i, point.j)
 }
 
 func parseInt(s string) int {
@@ -111,6 +128,10 @@ func (m1 *Matrix) copy(m2 Matrix, start Point) {
 			(*m1)[start.i+i][start.j+j] = v
 		}
 	}
+}
+
+func (matrix *Matrix) size() (m int, n int) {
+	return len(*matrix), len((*matrix)[0])
 }
 
 func printMatrix(matrix Matrix) {
