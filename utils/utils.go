@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"bufio"
@@ -9,11 +9,11 @@ import (
 )
 
 type Point struct {
-	i int
-	j int
+	I int
+	J int
 }
 
-func readTextFile(filepath string) []string {
+func ReadTextFile(filepath string) []string {
 	f, err := os.Open(filepath)
 	if err != nil {
 		panic(err)
@@ -45,8 +45,8 @@ var (
 
 var DIRECTIONS = []Direction{UP, RIGHT, DOWN, LEFT}
 
-func (direction *Direction) scale(n int) Direction {
-	return Direction{direction.i * n, direction.j * n}
+func (direction *Direction) Scale(n int) Direction {
+	return Direction{direction.I * n, direction.J * n}
 }
 
 var CHAR_TO_DIRECTION = map[rune]Direction{
@@ -56,23 +56,23 @@ var CHAR_TO_DIRECTION = map[rune]Direction{
 	'L': LEFT,
 }
 
-func (point *Point) move(direction Direction) Point {
-	return Point{point.i + direction.i, point.j + direction.j}
+func (point *Point) Move(direction Direction) Point {
+	return Point{point.I + direction.I, point.J + direction.J}
 }
 
-func (p1 *Point) distance(p2 Point) float64 {
-	return math.Sqrt(math.Pow(float64(p2.i-p1.i), 2)+math.Pow(float64(p2.j-p1.j), 2))
+func (p1 *Point) Distance(p2 Point) float64 {
+	return math.Sqrt(math.Pow(float64(p2.I-p1.I), 2) + math.Pow(float64(p2.J-p1.J), 2))
 }
 
-func (point *Point) inside(m int, n int) bool {
-	return point.i >= 0 && point.j >= 0 && point.i < m && point.j < n
+func (point *Point) Inside(m int, n int) bool {
+	return point.I >= 0 && point.J >= 0 && point.I < m && point.J < n
 }
 
-func (point *Point) toString() string {
-	return fmt.Sprintf("%d:%d", point.i, point.j)
+func (point *Point) ToString() string {
+	return fmt.Sprintf("%d:%d", point.I, point.J)
 }
 
-func parseInt(s string) int {
+func ParseInt(s string) int {
 	i, err := strconv.Atoi(s)
 	if err != nil {
 		fmt.Printf("Error parsing int %s: %s\n", s, err)
@@ -81,17 +81,17 @@ func parseInt(s string) int {
 	return i
 }
 
-func printText(text []string) {
+func PrintText(text []string) {
 	for _, line := range text {
 		fmt.Println(line)
 	}
 }
 
-func replaceInString(s string, i int, r string) string {
+func ReplaceInString(s string, i int, r string) string {
 	return s[:i] + r + s[i+1:]
 }
 
-func transpose(pattern [][]int) [][]int {
+func Transpose(pattern [][]int) [][]int {
 	m := len(pattern)
 	n := len(pattern[0])
 	result := make([][]int, n)
@@ -106,7 +106,7 @@ func transpose(pattern [][]int) [][]int {
 
 type Matrix [][]int
 
-func newMatrix(m int, n int) Matrix {
+func NewMatrix(m int, n int) Matrix {
 	matrix := make([][]int, m)
 	for i := range matrix {
 		matrix[i] = make([]int, n)
@@ -114,31 +114,35 @@ func newMatrix(m int, n int) Matrix {
 	return matrix
 }
 
-func (m *Matrix) get(point Point) int {
-	return (*m)[point.i][point.j]
+func (m *Matrix) Get(point Point) int {
+	return (*m)[point.I][point.J]
 }
 
-func (m *Matrix) inside(point Point) bool {
-	return point.i >= 0 && point.j >= 0 && point.i < len(*m) && point.j < len((*m)[0])
+func (m *Matrix) Inside(point Point) bool {
+	return point.I >= 0 && point.J >= 0 && point.I < len(*m) && point.J < len((*m)[0])
 }
 
-func (m1 *Matrix) copy(m2 Matrix, start Point) {
+func (m1 *Matrix) Copy(m2 Matrix, start Point) {
 	for i, row := range m2 {
 		for j, v := range row {
-			(*m1)[start.i+i][start.j+j] = v
+			(*m1)[start.I+i][start.J+j] = v
 		}
 	}
 }
 
-func (matrix *Matrix) size() (m int, n int) {
+func (matrix *Matrix) Size() (m int, n int) {
 	return len(*matrix), len((*matrix)[0])
 }
 
-func printMatrix(matrix Matrix) {
+func PrintMatrix(matrix Matrix) {
 	for _, row := range matrix {
 		for _, val := range row {
 			fmt.Printf("%d\t", val)
 		}
 		fmt.Println()
 	}
+}
+
+func WaitForInput() {
+	fmt.Scanln()
 }
