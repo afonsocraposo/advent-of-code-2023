@@ -13,6 +13,11 @@ type Point struct {
 	J int
 }
 
+type Range struct {
+    Start int
+    End int
+}
+
 func ReadTextFile(filepath string) []string {
 	f, err := os.Open(filepath)
 	if err != nil {

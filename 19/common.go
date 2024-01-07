@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 
 	. "github.com/afonsocraposo/advent-of-code-2023/utils"
@@ -11,11 +12,61 @@ type Workflow struct {
 	conditions []Condition
 }
 
+type Node struct {
+	Condition
+	altDest string
+}
+
+func (n *Node) goTo(part map[string]int) string {
+	if n.test(part) {
+		return n.dest
+	}
+	return n.altDest
+}
+
 func ParseWorkfowLine(line string) (string, Workflow) {
 	label, text, _ := strings.Cut(line, "{")
 	text = text[:len(text)-1]
 	workflow := ParseWorkfow(text)
 	return label, workflow
+}
+
+func getLabel(label string, index int) string {
+	return fmt.Sprintf("%s%d", label, index)
+}
+
+func ParseNodesLine(line string) map[string]Node {
+	nodes := map[string]Node{}
+
+	label, text, _ := strings.Cut(line, "{")
+	text = text[:len(text)-1]
+
+	c := strings.Split(text, ",")
+	end := len(c) - 1
+	li := 0
+	for i, slice := range c[:end] {
+		node := Node{}
+
+		condition := ParseCondition(slice)
+		node.Condition = condition
+
+		if i == end-1 {
+			next := c[i+1]
+			node.altDest = next
+		} else {
+			node.altDest = getLabel(label, li+1)
+		}
+
+		var l string
+		if li > 0 {
+			l = getLabel(label, li)
+		} else {
+			l = label
+		}
+		nodes[l] = node
+		li++
+	}
+	return nodes
 }
 
 func ParseWorkfow(text string) Workflow {
@@ -34,12 +85,12 @@ func ParseWorkfow(text string) Workflow {
 }
 
 func (w *Workflow) goTo(part map[string]int) string {
-    for _, condition := range w.conditions {
-        if condition.test(part) {
-            return condition.dest
-        }
-    }
-    return w.dest
+	for _, condition := range w.conditions {
+		if condition.test(part) {
+			return condition.dest
+		}
+	}
+	return w.dest
 }
 
 type Condition struct {
@@ -51,6 +102,18 @@ type Condition struct {
 
 func (c *Condition) test(part map[string]int) bool {
 	pv := part[c.label]
+	g := pv > c.value
+	return g == c.greater
+}
+
+func (c *Condition) testRange(part map[string]Range) bool {
+	pr := part[c.label]
+    var pv int
+    if c.greater {
+        pv = pr.Start
+    } else {
+        pv = pr.End
+    }
 	g := pv > c.value
 	return g == c.greater
 }
